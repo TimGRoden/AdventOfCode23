@@ -9,7 +9,8 @@ namespace Day4
 {
     public class ScratchCard
     {
-        private List<int> winners, numbers;
+        public List<int> winners { get; private set; }
+        public List<int> numbers { get; private set; }
         public int ID { get; private set; }
         public ScratchCard(string game)
         {
@@ -26,6 +27,32 @@ namespace Day4
                 if (val == "") continue;
                 numbers.Add(int.Parse(val));
             }
+        }
+        public string getWinners() => winners.Aggregate("",(s,i) => s + i + ", ").Trim(", ".ToCharArray());
+        public string getNumbers() => numbers.Aggregate("", (s, i) => s + i + ", ").Trim(", ".ToCharArray());
+        public string getCard() => $"Card {ID}: {getWinners()} | {getNumbers()}";
+        public void VisualiseMatches(bool showScores = false, int delay=100)
+        {
+            Console.Write(getCard());
+            System.Threading.Thread.Sleep(delay);
+            Console.CursorLeft = $"Card {ID}: {getWinners()} | ".Length;
+            for (int i = 0; i < numbers.Count; i++)
+            {
+                if (winners.Contains(numbers[i])) Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                else Console.BackgroundColor = ConsoleColor.Black;
+                Console.Write(numbers[i]);
+                Console.ResetColor();
+                System.Threading.Thread.Sleep(delay);
+                if (i < numbers.Count - 1) Console.Write(", ");
+            }
+            System.Threading.Thread.Sleep(delay);
+            Console.Write($" => {getMatches()} matches");
+            if (showScores)
+            {
+                System.Threading.Thread.Sleep(delay);
+                Console.WriteLine($" => {getScore()} points");
+            }
+            else Console.WriteLine();
         }
         public int getScore() => (int)(0.5 * Math.Pow(2, getMatches()));
         public int getMatches()

@@ -97,7 +97,11 @@ namespace Day2
             }
             Game[] games = getGames(contents);
             int total = games.Aggregate(0,(n,g)=>n+(g.isValid()?g.ID:0));
-            if (visualise) Console.ReadKey(true);
+            if (visualise)
+            {
+                Console.ReadKey(true);
+                Console.Clear();
+            }
             long powerTotal = games.Aggregate(0,(n,g)=>n + g.getPower());
             if (visualise) Console.ReadKey(true);
             Console.Clear();

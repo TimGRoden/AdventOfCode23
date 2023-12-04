@@ -11,7 +11,6 @@ namespace Day10
     {
         static void Main(string[] args)
         {
-            File.WriteAllText("input.txt", "");
             string[] contents = File.ReadAllLines("input.txt");
 
 

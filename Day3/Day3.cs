@@ -8,12 +8,14 @@ using System.Data;
 using System.Xml.XPath;
 using System.Security.Cryptography;
 using System.Diagnostics;
+using System.Runtime.Remoting.Contexts;
 
 namespace Day3
 {
-    internal class Program
+    internal class Day3
     {
         const bool debugging = true;
+        const int delay = 10;
         static bool hasSymbol(string[] space, int C1, int C2, int R1, int R2)
         {
             for (int row = R1; row <= R2; row++)
@@ -39,6 +41,7 @@ namespace Day3
                 Console.SetCursorPosition(c1, row);
                 Console.Write(space[row].Substring(c1, len));
                 Console.ResetColor();
+                System.Threading.Thread.Sleep(delay);
             }
             return int.Parse(space[row].Substring(c1, len));
         }
@@ -62,7 +65,9 @@ namespace Day3
                 Console.SetCursorPosition(col, row); 
                 Console.BackgroundColor = ConsoleColor.DarkMagenta; 
                 Console.Write('*'); 
-                Console.ResetColor(); }
+                Console.ResetColor();
+                System.Threading.Thread.Sleep(delay);
+            }
             bool[] positions = new bool[9]; //left to right, top to bottom.
             for (int i = -1; i < 2; i++)
             {
@@ -93,11 +98,14 @@ namespace Day3
                 Console.SetCursorPosition(col, row); 
                 Console.BackgroundColor = ConsoleColor.DarkBlue; 
                 Console.Write('*'); 
-                Console.ResetColor(); }
+                Console.ResetColor();
+                System.Threading.Thread.Sleep(delay);
+            }
             return false;
         }
         static int Part1(string[] space)
         {
+            if (debugging) foreach (string line in space) Console.WriteLine(line);
             int total = 0;
             for (int row = 0;row < space.Length; row++)
             {
@@ -112,15 +120,18 @@ namespace Day3
                         if (hasSymbol(space, C1, C2, R1, R2))
                         {
                             total += int.Parse(space[row].Substring(++C1, C2 - C1));
-                            //if (debugging) Highlight(space, row, C1, C2);
-                        } //else if (debugging) Highlight(space, row, ++C1, C2, ConsoleColor.DarkYellow);
-                    }
+                            if (debugging) Highlight(space, row, C1, C2);
+                        }
+                        else if (debugging) Highlight(space, row, ++C1, C2, ConsoleColor.DarkYellow); 
+                        }
                 }
             }
+            Console.SetCursorPosition(0, space.Length + 2);
             return total;
         }
         static int Part2(string[] space)
         {
+            if (debugging) foreach (string line in space) Console.WriteLine(line);
             int total = 0;
             for (int row = 0;row< space.Length; row++)
             {
@@ -129,6 +140,7 @@ namespace Day3
                     if (space[row][col] == '*') total += calcGear(space, col, row);
                 }
             }
+            Console.SetCursorPosition(0, space.Length + 2);
             return total;
         }
         static void Highlight(string[] contents, int row, int c1, int c2, ConsoleColor shade = ConsoleColor.DarkMagenta)
@@ -137,13 +149,23 @@ namespace Day3
             Console.SetCursorPosition(c1, row);
             Console.Write(contents[row].Substring(c1, c2 - c1));
             Console.ResetColor();
+            System.Threading.Thread.Sleep(delay);
         }
         static void Main(string[] args)
         {
-            if (debugging) Console.ReadKey(true);
+            if (debugging)
+            {
+                Console.WriteLine("Please maximise the window then press any key to continue.");
+                Console.ReadKey(true);
+                Console.Clear();
+            }
             string[] contents = File.ReadAllLines("input.txt");
-            if (debugging) foreach (string line in contents) Console.WriteLine(line);
             Console.WriteLine($"Part 1: {Part1(contents)}.");
+            if (debugging)
+            {
+                Console.ReadKey(true);
+                Console.Clear();
+            }
             Console.WriteLine($"Part 2: {Part2(contents)}.");
             Console.ReadKey();
         }

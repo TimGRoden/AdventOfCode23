@@ -70,7 +70,7 @@ namespace Day1
             {
                 Console.ResetColor();
                 Console.CursorLeft = line.Length + 1;
-                Console.Write($" => {getResult(result)}");
+                Console.Write($"=> {getResult(result)}");
                 Console.WriteLine();   
             }
             return result;
