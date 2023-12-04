@@ -11,9 +11,11 @@ namespace Day2
 {
     internal class Day2
     {
-        static bool visualise = true;
-        const int delay = 100;
-        static int getID(string game) => int.Parse(game.Split(':')[0].Substring(5));
+        static int getID(string game)
+        {
+            string[] parts = game.Split(':');
+            return int.Parse(parts[0].Substring(5));
+        }
         static Dictionary<char, int> maxBeads = new Dictionary<char, int>() { {'r',12 }, {'g',13 }, {'b',14 } };
         static bool isValidSubgame(string subGame)
         { // 3 blue, 4 red;
@@ -52,13 +54,6 @@ namespace Day2
                     case 'b': result[2]+=count; break;
                 }
             }
-            if (visualise)
-            {
-                if (Console.CursorTop > Console.WindowHeight - 2) Console.Clear();
-                Console.WriteLine(game);
-                Console.Write($"MIN: {result[0]} red, {result[1]} green, {result[2]} blue. ");
-                System.Threading.Thread.Sleep(delay);
-            }
             return result;
         }
         static int[] minBeads(string game)
@@ -70,49 +65,23 @@ namespace Day2
                 int[] needed = countBeads(subgame.Dequeue());
                 for (int i=0;i<needed.Length; i++) if (needed[i] > result[i]) result[i] = needed[i];
             }
-            if (visualise)
-            {
-                if (Console.CursorTop > Console.WindowHeight - 2) Console.Clear();
-                Console.WriteLine(game);
-                Console.Write($"MIN: {result[0]} red, {result[1]} green, {result[2]} blue. ");
-                System.Threading.Thread.Sleep(delay);
-            }
+            //Console.WriteLine(game);
+            //Console.Write($"MIN: {result[0]} red, {result[1]} green, {result[2]} blue. ");
             return result;
         }
         static int powerBeads(string game) => minBeads(game).Aggregate(1, (n, b) => n * b);
-        static Game[] getGames(string[] contents)
-        {
-            Game[] games = new Game[contents.Length];
-            for (int i = 0; i < contents.Length; i++) games[i] = new Game(contents[i], visualise, delay);
-            return games;
-        }
         static void Main(string[] args)
         {
             string[] contents = File.ReadAllLines("input.txt");
-            if (visualise)
+            int total = 0;
+            foreach (string game in contents)
             {
-                Console.WriteLine("Maximise, then press any key to begin.");
-                Console.ReadKey(true);
-                Console.Clear();
+                if (isValid(game)) total += getID(game);
             }
-            Game[] games = getGames(contents);
-            int total = games.Aggregate(0,(n,g)=>n+(g.isValid()?g.ID:0));
-            if (visualise) Console.ReadKey(true);
-            long powerTotal = games.Aggregate(0,(n,g)=>n + g.getPower());
-            if (visualise) Console.ReadKey(true);
-            Console.Clear();
-            Console.WriteLine($"Part 1: {total}");
-            Console.WriteLine($"Part 2: {powerTotal}");
-            //int total = 0;
-
-            //foreach (string game in contents)
-            //{
-            //    if (isValid(game)) total += getID(game);
-            //}
-            //Console.WriteLine($"Part1: {total}.");
-            //long powerTotal = 0;
-            //foreach (string game in contents) powerTotal += powerBeads(game);
-            //Console.WriteLine($"Part2: {powerTotal}.");
+            Console.WriteLine($"Part1: {total}.");
+            long powerTotal = 0;
+            foreach (string game in contents) powerTotal += powerBeads(game);
+            Console.WriteLine($"Part2: {powerTotal}.");
             Console.ReadKey();
 
         }
