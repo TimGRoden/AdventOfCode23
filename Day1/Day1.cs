@@ -9,13 +9,35 @@ namespace Day1
 {
     internal class Day1
     {
+        static bool visualise = true;
+        static int delay = 10;
         static void printList(List<string> items) => Console.WriteLine(items.Aggregate("[", (r, i) => i + ", ").Trim(", ".ToCharArray()).ToString() + "]");
         static List<string> stripDown(string line, bool part2 = false)
         {
+            if (visualise)
+            {
+                if (Console.CursorTop >= Console.WindowHeight - 2) Console.Clear();
+                Console.Write(line);
+                Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                System.Threading.Thread.Sleep(delay);
+            }
             List<string> result = new List<string>();
             if (!part2)
             {
-                foreach (char c in line) if (char.IsNumber(c)) result.Add(c.ToString());
+                for (int i = 0; i < line.Length; i++)
+                {
+                    if (char.IsNumber(line[i]))
+                    {
+                        result.Add(line[i].ToString());
+                        if (visualise)
+                        {
+                            Console.CursorLeft = i;
+                            Console.Write(line[i]);
+                            System.Threading.Thread.Sleep(delay);
+                            
+                        }
+                    }
+                }
             }
             else
             {
@@ -27,24 +49,40 @@ namespace Day1
                         //Find all instances of the word.
                         for (int i = 0; i <= line.Length - word.Length; i++)
                         {
-                            if (line.Substring(i, word.Length) == word) foundItems.Add(i, word);
+                            if (line.Substring(i, word.Length) == word)
+                            {
+                                foundItems.Add(i, word);
+                                if (visualise)
+                                {
+                                    Console.CursorLeft = i;
+                                    if (word.Length == 1) Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                                    else Console.BackgroundColor = ConsoleColor.DarkGreen;
+                                    Console.Write(word);
+                                    System.Threading.Thread.Sleep(delay);
+                                }
+                            }
                         }
                     }
                 }
                 foreach (int key in foundItems.Keys.OrderBy(x => x).ToArray()) result.Add(foundItems[key]);
+            }
+            if (visualise)
+            {
+                Console.ResetColor();
+                Console.CursorLeft = line.Length + 1;
+                Console.Write($" => {getResult(result)}");
+                Console.WriteLine();   
             }
             return result;
         }
         static int getResult(List<string> parts)
         {
             string result = "";
-            //Console.Write(printList(parts));
             if (words.ContainsKey(parts[0])) result += words[parts[0]];
             else result += parts[0];
             parts.Reverse();
             if (words.ContainsKey(parts[0])) result += words[parts[0]];
             else result += parts[0];
-            //Console.WriteLine(" => "+result);
             return int.Parse(result);
         }
         static Dictionary<string, int> words = new Dictionary<string, int>(){
@@ -61,8 +99,13 @@ namespace Day1
             "six",    "6" , "seven",  "7" , "eight",  "8" , "nine",   "9" };
         static void Main(string[] args)
         {
+            if (visualise)
+            {
+                Console.WriteLine("Press any key to visualise:");
+                Console.ReadKey(true);
+                Console.Clear();
+            }
             string[] contents = File.ReadAllLines("input.txt");
-            foreach (string line in contents) stripDown(line, true);
             int total = 0;
             foreach (string line in contents) total += getResult(stripDown(line));
             Console.WriteLine($"Part 1: {total}");
