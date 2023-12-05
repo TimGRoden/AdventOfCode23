@@ -12,7 +12,7 @@ using System.Runtime.Remoting.Contexts;
 
 namespace Day3
 {
-    internal class Day3
+    internal class Program
     {
         const bool debugging = true;
         const int delay = 10;
@@ -140,7 +140,6 @@ namespace Day3
                     if (space[row][col] == '*') total += calcGear(space, col, row);
                 }
             }
-            Console.SetCursorPosition(0, space.Length + 2);
             return total;
         }
         static void Highlight(string[] contents, int row, int c1, int c2, ConsoleColor shade = ConsoleColor.DarkMagenta)
@@ -155,7 +154,7 @@ namespace Day3
         {
             if (debugging)
             {
-                Console.WriteLine("Please maximise the window then press any key to continue.");
+                Console.WriteLine("Please maximise the window and set the font size to 8.");
                 Console.ReadKey(true);
                 Console.Clear();
             }
@@ -166,6 +165,7 @@ namespace Day3
                 Console.ReadKey(true);
                 Console.Clear();
             }
+            Console.SetCursorPosition(0, contents.Length + 2);
             Console.WriteLine($"Part 2: {Part2(contents)}.");
             Console.ReadKey();
         }
