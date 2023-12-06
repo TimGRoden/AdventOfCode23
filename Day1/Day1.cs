@@ -44,25 +44,22 @@ namespace Day1
                 Dictionary<int,string> foundItems = new Dictionary<int,string>();
                 foreach (string word in valids)
                 {
-                    if (line.Contains(word))
-                    {
+                    if (!line.Contains(word)) continue;
                         //Find all instances of the word.
-                        for (int i = 0; i <= line.Length - word.Length; i++)
+                    for (int i = 0; i <= line.Length - word.Length; i++)
+                    {
+                        if (line.Substring(i, word.Length) != word) continue;
+                        foundItems.Add(i, word);
+                        if (visualise)
                         {
-                            if (line.Substring(i, word.Length) == word)
-                            {
-                                foundItems.Add(i, word);
-                                if (visualise)
-                                {
-                                    Console.CursorLeft = i;
-                                    if (word.Length == 1) Console.BackgroundColor = ConsoleColor.DarkMagenta;
-                                    else Console.BackgroundColor = ConsoleColor.DarkGreen;
-                                    Console.Write(word);
-                                    System.Threading.Thread.Sleep(delay);
-                                }
-                            }
+                            Console.CursorLeft = i;
+                            if (word.Length == 1) Console.BackgroundColor = ConsoleColor.DarkMagenta;
+                            else Console.BackgroundColor = ConsoleColor.DarkGreen;
+                            Console.Write(word);
+                            System.Threading.Thread.Sleep(delay);
                         }
                     }
+                    
                 }
                 foreach (int key in foundItems.Keys.OrderBy(x => x).ToArray()) result.Add(foundItems[key]);
             }
@@ -106,12 +103,8 @@ namespace Day1
                 Console.Clear();
             }
             string[] contents = File.ReadAllLines("input.txt");
-            int total = 0;
-            foreach (string line in contents) total += getResult(stripDown(line));
-            Console.WriteLine($"Part 1: {total}");
-            total = 0;
-            foreach (string line in contents) total += getResult(stripDown(line, true));
-            Console.WriteLine($"Part 2: {total}");
+            Console.WriteLine($"Part 1: {contents.Aggregate(0, (t, l) => t + getResult(stripDown(l)))}");
+            Console.WriteLine($"Part 2: {contents.Aggregate(0,(t,l) => t + getResult(stripDown(l, true)))}");
             Console.ReadKey();
         }
     }

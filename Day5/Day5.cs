@@ -10,7 +10,7 @@ namespace Day5
 {
     internal class Day5
     {
-        static bool visualise = true;
+        static bool visualise = false;
         static int delay = 100;
 
         static List<Map> maps = new List<Map>();
@@ -30,14 +30,22 @@ namespace Day5
             maps.Add(new Map(mapContents, visualise, delay));
             if (visualise)
             {
-                foreach (Map map in maps) Console.WriteLine(map.getMap());
+                Console.BackgroundColor = ConsoleColor.DarkGray;
+                foreach (Map map in maps)
+                {
+                    if (Console.BackgroundColor == ConsoleColor.Black) Console.BackgroundColor = ConsoleColor.DarkGray;
+                    else Console.BackgroundColor = ConsoleColor.Black; //Alternate colours
+                    Console.WriteLine(map.getMap());
+                }
+                Console.ResetColor();
             }
         }
         static long getLocation(long seed)
         {
             if (visualise)
             {
-                if (Console.CursorTop + 2 > Console.WindowHeight) Console.Clear();
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine($"Seed {seed}");
                 System.Threading.Thread.Sleep(delay);
             }
@@ -85,10 +93,12 @@ namespace Day5
                 Console.WriteLine("Maximise before pressing to continue.");
                 Console.ReadKey(true);
                 Console.Clear();
+                Console.WriteLine($"Seeds: {seeds.Aggregate("",(l,s)=> l + s + ", ").Trim(", ".ToCharArray())}");
             }
             getMaps(contents);
             if (visualise)
             {
+                Console.ResetColor();
                 Console.WriteLine("Press to begin Part 1.");
                 Console.ReadKey(true);
                 Console.Clear();
@@ -96,7 +106,8 @@ namespace Day5
             Dictionary<long, long> Mapping = new Dictionary<long, long>();
             foreach (long seed in seeds) Mapping.Add(seed, getLocation(seed));
             long minLoc = Mapping.Values.OrderBy(x => x).ToArray()[0];
-            Console.WriteLine($"Part 1 Location {minLoc}.");
+            if (visualise) Console.ResetColor();
+            Console.WriteLine($"Part 1 Best Location {minLoc}.");
             if (visualise)
             {
                 Console.WriteLine("Press any key to continue.");
@@ -109,7 +120,7 @@ namespace Day5
                 Mapping.Add(seeds[i], getMinLocRange(seedrange));
             }
             minLoc = Mapping.Values.OrderBy(x => x).ToArray()[0];
-            Console.WriteLine($"Part 2 Location {minLoc}.");
+            Console.WriteLine($"Part 2 Best Location {minLoc}.");
             Console.ReadKey();
         }
     }

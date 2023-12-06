@@ -35,7 +35,22 @@ namespace Day5
 
         public long mapSeed(long seed)
         {
-            if (visualise) Console.Write($"{source} {seed}: mapped to ");
+
+            if (visualise)
+            {
+                Console.ForegroundColor = ConsoleColor.Gray;
+                switch (destination)
+                {
+                    case "soil": Console.BackgroundColor = ConsoleColor.DarkRed; break;
+                    case "fertilizer": Console.BackgroundColor = ConsoleColor.DarkGreen; break;
+                    case "water": Console.BackgroundColor = ConsoleColor.DarkCyan; break;
+                    case "light": Console.BackgroundColor = ConsoleColor.DarkYellow; break;
+                    case "temperature": Console.BackgroundColor = ConsoleColor.DarkMagenta; break;
+                    case "humidity": Console.BackgroundColor = ConsoleColor.DarkBlue; break;
+                    case "location": Console.BackgroundColor = ConsoleColor.Green; Console.ForegroundColor = ConsoleColor.Black; break;
+                }
+                Console.Write($"{source} {seed} mapped to ");
+            }
             foreach (long[] mapping in map)
             {
                 if (seed < mapping[1] || seed > mapping[1] + mapping[2]) continue;
@@ -51,6 +66,7 @@ namespace Day5
             {
                 Console.WriteLine($"{destination} {seed}");
                 System.Threading.Thread.Sleep(delay);
+                Console.ForegroundColor = ConsoleColor.Gray;
             }
             return seed;
         }
@@ -65,7 +81,17 @@ namespace Day5
         {
             if (visualise)
             {
-                if (Console.CursorTop + 2 > Console.WindowHeight) Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Gray;
+                switch (destination)
+                {
+                    case "soil": Console.BackgroundColor = ConsoleColor.DarkRed; break;
+                    case "fertilizer": Console.BackgroundColor = ConsoleColor.DarkGreen; break;
+                    case "water": Console.BackgroundColor = ConsoleColor.DarkCyan; break;
+                    case "light": Console.BackgroundColor = ConsoleColor.DarkYellow; break;
+                    case "temperature": Console.BackgroundColor = ConsoleColor.DarkMagenta; break;
+                    case "humidity": Console.BackgroundColor = ConsoleColor.DarkBlue; break;
+                    case "location": Console.BackgroundColor = ConsoleColor.Green; Console.ForegroundColor = ConsoleColor.Black; break;
+                }
                 Console.WriteLine($"Mapping {seed[0]} to {seed[0] + seed[1]-1}");
                 System.Threading.Thread.Sleep(delay);
             }
@@ -89,7 +115,6 @@ namespace Day5
             }
             if (visualise)
             {
-                if (Console.CursorTop + 2 > Console.WindowHeight) Console.Clear();
                 Console.WriteLine(printList(result));
                 System.Threading.Thread.Sleep(delay);
             }
@@ -102,6 +127,11 @@ namespace Day5
 
             foreach (long[] seedset in seeds)
             { //Do each seed range individually.
+                if (visualise)
+                {
+                    Console.BackgroundColor = ConsoleColor.Black; Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine($"Mapping {seedset[0]} to {seedset[1] + seedset[0] - 1}.");
+                }
                 foreach (long[] res in mapSeedRange(seedset)) results.Add(res);
             }
 
