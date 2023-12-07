@@ -10,7 +10,7 @@ namespace Day5
 {
     internal class Day5
     {
-        static bool visualise = false;
+        static bool visualise = true;
         static int delay = 100;
 
         static List<Map> maps = new List<Map>();

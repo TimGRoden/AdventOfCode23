@@ -9,8 +9,8 @@ namespace Day01v2
 {
     internal class Day01v2
     {
-        static bool visualise = true;
-        const int delay = 100;
+        static bool visualise = false;
+        const int delay = 1000;
         static int Part1(string[] lines)
         {
             int total = 0;
