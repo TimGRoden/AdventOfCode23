@@ -20,7 +20,7 @@ namespace Day6
                 System.Threading.Thread.Sleep(delay);
                 Console.Write(" => [");
             }
-            MatchCollection matches = Regex.Matches(s, @"[^\d][\d]+");
+            MatchCollection matches = Regex.Matches(s, @"[\D][\d]+");
             List<long> result = new List<long>();
             foreach (Match match in matches)
             {
