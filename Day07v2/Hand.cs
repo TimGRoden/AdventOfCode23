@@ -34,31 +34,48 @@ namespace Day07v2
                 if (count == 2) Scores[0] = 2;
                 else if (count == 1) Scores[0] = 1;
             }
-            double total = 0;
-            for (int i = 0; i < Scores.Length; i++)
-            {
-                total += Math.Pow(100, Scores.Length - i) * Scores[i];
-            }
-            return total;
+
+            return ScoreThis(Scores);
         }
+        private int CountVal(char[] c, char x) => c.Aggregate(0, (n, l) => n + (l == x ? 1 : 0));
         public double getJokerScore()
         {
             double[] Scores = new double[hand.Length + 1];
             nameCards['J'] = 1;
-            //Intention: Remove Jokers, then increase the handscore to represent this.
-            //Calculate max = 5-CountJ
-            //if countJ>3, return 5 of a kind. (4 jokers + card is 5 of a kind. CHECK JOKERS FIRST.
-            //if COUNT(c)==max, '5 of a kind', use jokers to make it 5/5
-            //if COUNT(c)==max-1, '4 of a kind', use jokers to make it 4/4
-            //if COUNT(c)==max-2, 3 of a kind (check for pairs)
-            //if (count(c)==max-3), pair (check for 2 of a kind)
-            //if (count(c)==max-4), single card.
+            if (!hand.Contains("J")) return getScore(); //There's no jokers! Normal scoring applies.
 
+            for (int i = 0; i < hand.Length; i++) Scores[i + 1] = getCardVal(hand[i]);
+            string noJ = hand;
+            while (noJ.Contains("J")) noJ = noJ.Replace("J", "");
+            int countJ = hand.Length - noJ.Length;
+            if (noJ.Length < 2) Scores[0] = 6; //Only 1 or 0 cards that aren't J. 4/5 wildcards = all same.
+            else
+            {
+                char[] sorted = noJ.ToArray().OrderByDescending(x => CountVal(noJ.ToArray(), x)+(double)getCardVal(x)/100).ToArray(); //Deals with two pairs with the x/10 to organise them as pairs
+                if (sorted[0] == sorted.Last()) Scores[0] = 6;
+                else if (sorted[0] == sorted[sorted.Length - 2]) Scores[0] = 5;
+                else if (noJ.Length == 3) Scores[0] = 3; //3 of a kind.
+                else if (sorted[0] == sorted[1] && sorted[2] == sorted[3]) Scores[0] = 4; //Full house
+                else if (sorted[0] == sorted[1]) Scores[0] = 3; //3oak
+                else Scores[0] = 1; //pair
+            }
 
             nameCards['J'] = 11; //Reset to avoid editing for other parts.
-
-            return 0;
+            return ScoreThis(Scores);
         }
-        public string getHand() => $"Hand: {hand}, Bid: {bid}, Score {getScore()}";
+        private double ScoreThis(double[] Scores)
+        {
+            double total = 0;
+            for (int i = 0; i < Scores.Length; i++)
+            {
+                total += Math.Pow(100, Scores.Length - i-1) * Scores[i];
+            }
+            return total;
+        }
+        static Dictionary<int, string> result = new Dictionary<int, string>() {
+{ 0, "High Card" }, {1, "Pair" }, {2, "2 Pairs" }, {3,"3 of a Kind" },{4,"Full House" },{5,"4 of a Kind" },{6,"5 of a Kind" } };
+        private string convertHandType(double Score) => result[(int)Math.Floor(Score / 10000000000)];
+        
+        public string getHand(bool jokers=false) => $"Hand: {hand}, Bid: {bid}, Result: {convertHandType(jokers?getJokerScore():getScore())}";
     }
 }
