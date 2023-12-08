@@ -10,7 +10,7 @@ namespace Day8
 {
     internal class Program
     {
-        static bool visualise = false;
+        static bool visualise = true;
         const int delay = 100;
         static Node[] MakeNodes(string[] contents)
         {
@@ -56,8 +56,8 @@ namespace Day8
                 count++;
                 switch (instr[pos])
                 {
-                    case 'L': curr = curr.LeftNode; if (visualise) DelayPrint($"Going left to {curr.ID}");  break;
-                    case 'R': curr = curr.RightNode; if (visualise) DelayPrint($"Going right to {curr.ID}"); break;
+                    case 'L': if (visualise) DelayPrint($"{curr.getNode()} going left to {curr.LeftNode.ID}"); curr = curr.LeftNode; break;
+                    case 'R': if (visualise) DelayPrint($"{curr.getNode()} going left to {curr.LeftNode.ID}"); curr = curr.RightNode; break;
                 }
                 pos = (pos + 1)%instr.Length;
             }
@@ -74,10 +74,18 @@ namespace Day8
             int count = 0, pos = 0;
             List<Node> ghosts = new List<Node>();
             foreach (Node node in nodes) if (node.ID[2]=='A') ghosts.Add(node);
+            if (visualise)
+            {
+                foreach (Node node in ghosts) Console.WriteLine($"Ghost {node.getNode()}.");
+                Console.WriteLine("Press to begin Part 2");
+                Console.ReadKey(true); Console.Clear();
+            }
             List<long> counts = new List<long>();
-            while (counts.Count < ghosts.Count)
+            int ghostCount = ghosts.Count;
+            while (counts.Count < ghostCount) //counts is the list of all "found" lengths.
             {
                 count++;
+                List<Node> newGhosts = new List<Node>();
                 switch (instr[pos])
                 {
                     case 'L':
@@ -85,7 +93,8 @@ namespace Day8
                         {
                             if (visualise) DelayPrint($"Ghost {ghosts[i].ID} moving to {ghosts[i].LeftNode.ID}");
                             ghosts[i] = ghosts[i].LeftNode;
-                            if (ghosts[i].ID[2] == 'Z') counts.Add(count);
+                            if (ghosts[i].ID[2] == 'Z') { counts.Add(count); if (visualise) DelayPrint($"Found {counts.Count} ghost-paths, length {counts.Last()}."); Console.ReadKey(true); }
+                            else newGhosts.Add(ghosts[i]); //This ghost isn't at z. keep going.
                         }
                         break;
                     case 'R':
@@ -93,10 +102,12 @@ namespace Day8
                         {
                             if (visualise) DelayPrint($"Ghost {ghosts[i].ID} moving to {ghosts[i].RightNode.ID}");
                             ghosts[i] = ghosts[i].RightNode;
-                            if (ghosts[i].ID[2] == 'Z') counts.Add(count);
+                            if (ghosts[i].ID[2] == 'Z') { counts.Add(count); if (visualise) DelayPrint($"Found {counts.Count} ghost-paths, length {counts.Last()}."); Console.ReadKey(true); }
+                            else newGhosts.Add(ghosts[i]);
                         }
                         break;
                 }
+                ghosts = newGhosts;
                 pos = (pos + 1) % instr.Length;
             }
             
@@ -118,9 +129,19 @@ namespace Day8
         {
             string[] contents = File.ReadAllLines("input.txt");
             Node[] nodes = MakeNodes(contents);
-            if (visualise) foreach (Node node in nodes) Console.WriteLine(node.getNode());
+            if (visualise)
+            {
+                foreach (Node node in nodes) Console.WriteLine(node.getNode());
+                Console.WriteLine("Press to begin part 1.");
+                Console.ReadKey(true); Console.Clear();
+            }
 
             Console.WriteLine($"Part 1: {Part1(nodes, contents[0])} steps.");
+            if (visualise)
+            {
+                Console.WriteLine("Press clear.");
+                Console.ReadKey(true); Console.Clear();
+            }
             Console.WriteLine($"Part 2: {Part2(nodes, contents[0])} steps.");
 
             Console.ReadKey();
