@@ -57,17 +57,12 @@ namespace Day8
                 switch (instr[pos])
                 {
                     case 'L': if (visualise) DelayPrint($"{curr.getNode()} going left to {curr.LeftNode.ID}"); curr = curr.LeftNode; break;
-                    case 'R': if (visualise) DelayPrint($"{curr.getNode()} going left to {curr.LeftNode.ID}"); curr = curr.RightNode; break;
+                    case 'R': if (visualise) DelayPrint($"{curr.getNode()} going right to {curr.RightNode.ID}"); curr = curr.RightNode; break;
                 }
                 pos = (pos + 1)%instr.Length;
             }
             return count;
 
-        }
-        static bool atZ(List<Node> nodes)
-        {
-            foreach (Node node in nodes) if (node.ID[2] != 'Z') return false;
-            return true;
         }
         static long Part2(Node[] nodes, string instr)
         {
@@ -93,7 +88,7 @@ namespace Day8
                         {
                             if (visualise) DelayPrint($"Ghost {ghosts[i].ID} moving to {ghosts[i].LeftNode.ID}");
                             ghosts[i] = ghosts[i].LeftNode;
-                            if (ghosts[i].ID[2] == 'Z') { counts.Add(count); if (visualise) DelayPrint($"Found {counts.Count} ghost-paths, length {counts.Last()}."); Console.ReadKey(true); }
+                            if (ghosts[i].ID[2] == 'Z') { counts.Add(count); if (visualise) DelayPrint($"Found {counts.Count} ghost-paths, length {counts.Last()}."); }
                             else newGhosts.Add(ghosts[i]); //This ghost isn't at z. keep going.
                         }
                         break;
@@ -102,7 +97,7 @@ namespace Day8
                         {
                             if (visualise) DelayPrint($"Ghost {ghosts[i].ID} moving to {ghosts[i].RightNode.ID}");
                             ghosts[i] = ghosts[i].RightNode;
-                            if (ghosts[i].ID[2] == 'Z') { counts.Add(count); if (visualise) DelayPrint($"Found {counts.Count} ghost-paths, length {counts.Last()}."); Console.ReadKey(true); }
+                            if (ghosts[i].ID[2] == 'Z') { counts.Add(count); if (visualise) DelayPrint($"Found {counts.Count} ghost-paths, length {counts.Last()}."); }
                             else newGhosts.Add(ghosts[i]);
                         }
                         break;
