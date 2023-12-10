@@ -50,6 +50,7 @@ namespace Day9
         {
             List<int[]> lines = getSequences(contents);
             if (!visualise) return lines.Aggregate(0, (t, s) => t + getNext(s));
+
             int total = 0;
             foreach (int[] seq in lines)
             {
@@ -63,6 +64,7 @@ namespace Day9
         {
             List<int[]> lines = getSequences(contents);
             if (!visualise) return lines.Aggregate(0, (t, s) => t + getNext(s, true));
+
             int total = 0;
             foreach (int[] seq in lines)
             {
