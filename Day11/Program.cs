@@ -10,7 +10,10 @@ namespace Day11
     internal class Program
     {
         static bool visualise = true;
-        const int delay = 10;
+        const int delay = 0;
+        static ConsoleColor[] colors = { ConsoleColor.White, ConsoleColor.Gray, ConsoleColor.DarkGray};
+        static char[] stars = { '■','#','o','S','0','┼','╬', '≈' };
+        static Random rnd = new Random();
         static bool blankCol(string[] space, int col)
         {
             foreach (string s in space)
@@ -70,7 +73,7 @@ namespace Day11
                 if (!space[row].Contains('#'))
                 {
                     Console.BackgroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine(new string('░', Math.Min(space[row].Length, Console.WindowWidth-1)));
+                    Console.WriteLine(new string(' ', Math.Min(space[row].Length, Console.WindowWidth-1)));
                     Console.BackgroundColor = ConsoleColor.Black;
                     continue;
                 }
@@ -79,12 +82,16 @@ namespace Day11
                     if (blankCol(space, col))
                     {
                         Console.BackgroundColor = ConsoleColor.DarkRed;
-                        Console.Write('░');
+                        Console.Write(' ');
                         Console.BackgroundColor = ConsoleColor.Black;
                     } else
                     {
-                        if (space[row][col] == '#') Console.Write("■");
-                        else Console.Write('░');
+                        if (space[row][col] == '#')
+                        {
+                            Console.ForegroundColor = colors[rnd.Next(colors.Length)];
+                            Console.Write(stars[rnd.Next(stars.Length)]);
+                        }
+                        else Console.Write(' ');
                     }
                     System.Threading.Thread.Sleep(delay);
                 }
