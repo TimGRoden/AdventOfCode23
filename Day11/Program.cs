@@ -9,15 +9,8 @@ namespace Day11
 {
     internal class Program
     {
-        static bool visualise = false;
-        const int delay = 100;
-        static void padAt(string[] space, int col)
-        {
-            for (int i = 0; i < space.Length; i++)
-            {
-                space[i] = space[i].Substring(0, col) + "." + space[i].Substring(col);
-            }
-        }
+        static bool visualise = true;
+        const int delay = 10;
         static bool blankCol(string[] space, int col)
         {
             foreach (string s in space)
@@ -26,42 +19,19 @@ namespace Day11
             }
             return true;
         }
-        static long getDist(Point a, Point b, string[] space)
+        static long getDist(Point a, Point b, string[] space, int spacing)
         {
             long dist = Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y);
 
             for (int row = Math.Min(a.y, b.y); row < Math.Max(a.y, b.y); row++)
             {
-                if (!space[row].Contains('#')) dist += 999999;
+                if (!space[row].Contains('#')) dist += spacing;
             }
             for (int col = Math.Min(a.x,b.x); col < Math.Max(a.x,b.x); col++)
             {
-                if (blankCol(space, col)) dist += 999999;
+                if (blankCol(space, col)) dist += spacing;
             }
             return dist;
-        }
-        static string[] padSpace(string[] space)
-        {
-            for (int col = 0; col < space[0].Length; col++)
-            {
-                bool needsPadding = true;
-                int row = 0;
-                while (row < space.Length)
-                {
-                    if (space[row][col] == '#') { needsPadding = false; break; }
-                    row++;
-                }
-                if (!needsPadding) continue;
-                padAt(space, col);
-                col++;
-            }
-            List<string> newSpace = new List<string>();
-            for (int row = 0; row < space.Length; row++)
-            {
-                newSpace.Add(space[row]); //Always add once, should I add twice?
-                if (!space[row].Contains('#')) newSpace.Add(space[row]);
-            }
-            return newSpace.ToArray();
         }
         public struct Point { public int x, y; }
         static List<Point> stripSpace(string[] contents)
@@ -80,7 +50,7 @@ namespace Day11
             }
             return galaxies;
         }
-        static long TotalDists(string[] space)
+        static long TotalDists(string[] space, int spacing = 1)
         {
             List<Point> galaxies = stripSpace(space);
             long totalDist = 0;
@@ -88,46 +58,56 @@ namespace Day11
             {
                 for (int j = i+1; j<galaxies.Count; j++)
                 {
-                    totalDist += getDist(galaxies[i], galaxies[j], space);
+                    totalDist += getDist(galaxies[i], galaxies[j], space, spacing);
                 }
             }
             return totalDist;
         }
-        static void PlotSpace(List<Point> galaxies)
+        static void PlotSpace(string[] space)
         {
-            foreach (Point p in galaxies)
+            for (int row = 0; row< space.Length; row++)
             {
-                Console.SetCursorPosition(p.x, p.y);
-                Console.Write("#");
+                if (!space[row].Contains('#'))
+                {
+                    Console.BackgroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine(new string('░', Math.Min(space[row].Length, Console.WindowWidth-1)));
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    continue;
+                }
+                for (int col = 0; col < Math.Min(space[0].Length, Console.WindowWidth - 1); col++)
+                {
+                    if (blankCol(space, col))
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                        Console.Write('░');
+                        Console.BackgroundColor = ConsoleColor.Black;
+                    } else
+                    {
+                        if (space[row][col] == '#') Console.Write("■");
+                        else Console.Write('░');
+                    }
+                    System.Threading.Thread.Sleep(delay);
+                }
+                Console.WriteLine();
                 System.Threading.Thread.Sleep(delay);
             }
-        }
-        static int getDists(List<Point> galaxies)
-        {
-            int dist = 0;
-            for (int i=0;i<galaxies.Count; i++)
-            {
-                for (int j=i+1;j<galaxies.Count; j++)
-                { //Search every galaxy after this one.
-                    dist += Math.Abs(galaxies[j].x - galaxies[i].x) + Math.Abs(galaxies[j].y - galaxies[i].y);
-                }
-            }
-            return dist;
+
         }
         static void Main(string[] args)
         {
-            string[] contents = padSpace(File.ReadAllLines("input.txt"));
-            
-            List<Point> galaxies = stripSpace(contents);
-            int p1Tot = getDists(galaxies);
+            string[] contents = File.ReadAllLines("input.txt");
+
             if (visualise)
             {
-                PlotSpace(galaxies);
-                Console.SetCursorPosition(0, contents.Length);
+                Console.WriteLine("Press to start.");
+                Console.ReadKey(true); Console.Clear();
+                PlotSpace(contents);
             }
+
+            long p1Tot = TotalDists(contents,1);
             Console.WriteLine($"Part 1: {p1Tot}");
             contents = File.ReadAllLines("input.txt");
-            long p2Tot = TotalDists(contents);
+            long p2Tot = TotalDists(contents,999999);
             Console.WriteLine($"Part 2: {p2Tot}");
 
 
