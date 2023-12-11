@@ -104,7 +104,7 @@ namespace Day11
                 PlotSpace(contents);
             }
 
-            long p1Tot = TotalDists(contents,1);
+            long p1Tot = TotalDists(contents);
             Console.WriteLine($"Part 1: {p1Tot}");
             contents = File.ReadAllLines("input.txt");
             long p2Tot = TotalDists(contents,999999);
