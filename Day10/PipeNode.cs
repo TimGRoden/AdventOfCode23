@@ -45,6 +45,20 @@ namespace Day10
             }
             return count/2;
         }
+        public List<Point> GetPointList()
+        {
+            List<Point> points = new List<Point>();
+            PipeNode curr = this;
+            do
+            {
+                Point current; current.x = curr.xPos; current.y = curr.yPos;
+                points.Add(current);
+                curr = curr.nextNode;
+            } while (curr != this);
+            return points;
+        }
 
     }
+
 }
+

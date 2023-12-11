@@ -8,8 +8,12 @@ using System.Data.SqlTypes;
 
 namespace Day10
 {
-    internal class Program
+    public struct Point
     {
+        public int x, y;
+    }
+    internal class Program
+    {   
         static bool visualise = true;
         const int delay = 10;
         static int[] getStartPos(string[] contents)
@@ -116,10 +120,56 @@ namespace Day10
         static string[] padInput(string[] contents)
         {
             string[] padded = new string[contents.Length + 2];
-            padded[0] = new string('.', contents.Length + 2);
-            padded[padded.Length - 1] = new string('.', contents.Length + 2);
+            padded[0] = new string('.', contents[0].Length + 2);
+            padded[padded.Length - 1] = new string('.', contents[0].Length + 2);
             for (int i = 0; i < contents.Length; i++) padded[i + 1] = "." + contents[i] + ".";
             return padded;
+        }
+        static int countTrapped(string[] contents, PipeNode startNode)
+        {
+            int count = 0;
+            List<Point> allInPath = startNode.GetPointList();
+            List<char> edges = new List<char>{ '|'};
+            for (int row = 0; row < contents.Length; row++)
+            {
+                int crossings = 0;
+                Point pos; pos.y = row;
+                for (int col = 0; col < contents[0].Length; col++)
+                {
+                    pos.x = col;
+                    if (allInPath.Contains(pos))
+                    {
+                        if (edges.Contains(contents[pos.y][pos.x]))
+                        {
+                            crossings++;
+                            edges = new List<char> { '|' }; //If a crossing, reset searchlist
+                        }
+                        else if (contents[pos.y][pos.x] == 'F') edges.Add('J');
+                        else if (contents[pos.y][pos.x] == 'L') edges.Add('7');
+                        else if (contents[pos.y][pos.x] == '7' && edges.Contains('J')) edges.Remove('J');
+                        else if (contents[pos.y][pos.x] == 'J' && edges.Contains('7')) edges.Remove('7');
+                        continue;
+                    }
+                    //Not in the path. Is it free?
+                    if (crossings %2 == 1)
+                    {
+                        count++;
+                        if (!visualise) continue;
+                        Console.SetCursorPosition(pos.x, pos.y);
+                        Console.BackgroundColor = ConsoleColor.DarkGreen;
+                        Console.Write(contents[pos.y][pos.x]);
+                        System.Threading.Thread.Sleep(delay);
+                    } else if (visualise)
+                    {
+                        Console.SetCursorPosition(pos.x, pos.y);
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                        Console.Write(contents[pos.y][pos.x]);
+                        System.Threading.Thread.Sleep(delay);
+                    }
+                }
+            }
+
+            return count;
         }
         
         static void Main(string[] args)
@@ -133,11 +183,21 @@ namespace Day10
                 foreach (string line in contents) Console.WriteLine(line);
             }
             int sol = start.getLoopLength(visualise, delay);
-            if (visualise) Console.SetCursorPosition(0, contents.Length + 1);
+            if (visualise) Console.SetCursorPosition(0, contents.Length);
             Console.ResetColor();
             Console.WriteLine($"Max Path Length: {sol}.");
 
-
+            if (visualise)
+            {
+                Console.WriteLine("Press for Part 2:");
+                Console.ReadKey(true); Console.Clear();
+                foreach (string line in contents) Console.WriteLine(line);
+                start.getLoopLength(true, 0);
+            }
+            int sol2 = countTrapped(contents, start);
+            if (visualise) Console.SetCursorPosition(0, contents.Length);
+            Console.ResetColor();
+            Console.WriteLine($"Trapped spaces: {sol2}.");
 
 
 
